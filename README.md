@@ -11,3 +11,4 @@
 * Gathers detailed content from relevant pages.
 
 * Sends content to LLAMA 3.2 again to generate a Markdown brochure.
+* Again sends Markdown brochure to LLAMA 3.2 to Translate into any given language.

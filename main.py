@@ -1,15 +1,23 @@
 import json
-import re
 import requests
 from app.scraper.web_scraper import WebScraper
 from app.utils import utils
 from app.constants import constants
 
 
+def get_links_user_prompt(website):
+    return (
+        f"Here is the list of links on the website of {website.url}:\n"
+        "Decide which of these are relevant links for a company brochure. "
+        "Only include full https URLs. Ignore privacy policies, terms, emails, etc.\n\n"
+        + "\n".join(website.links)
+    )
+
+
 # get all scraped links and request to llama to keep relevant links only.
 def get_links(url):
     website = WebScraper(url)
-    user_prompt = utils.get_links_user_prompt(website)
+    user_prompt = get_links_user_prompt(website)
 
     payload = utils.create_prompt_payload(user_prompt, constants.LINK_SYSTEM_PROMPT)
 
@@ -63,11 +71,28 @@ def get_brochure_user_prompt(company_name, url):
 def create_brochure(company_name, url):
     user_prompt = get_brochure_user_prompt(company_name, url)
     payload = utils.create_prompt_payload(user_prompt, constants.BROCHURE_SYSTEM_PROMPT)
-    response = requests.post(constants.MODEL_UR, json=payload)
+    response = requests.post(constants.MODEL_URL, json=payload)
     response.raise_for_status()
     return response.json()["message"]["content"]
 
 
+def translate_brochure(lang):
+    details_response = create_brochure("Anthropic", "https://anthropic.com")
+    print("DETAILS RESPONSE:", details_response)
+    if not details_response:
+        return f"Failed to translate Brochure!"
+
+    user_prompt = f"Translate the following brochure into {lang}, for a social media post:\n\n Here is the Details:\n\n{details_response[:5000]}"
+    request_payload = utils.create_prompt_payload(
+        user_prompt, constants.TRANSLATE_SYSTEM_PROMPT
+    )
+
+    response = requests.post(constants.MODEL_URL, json=request_payload)
+    response.raise_for_status()
+
+    return response.json()["message"]["content"]
+
+
 if __name__ == "__main__":
-    details = create_brochure("HuggingFace", "https://anthropic.com")
-    print(details)
+    final_output = translate_brochure("Bangla")
+    print(final_output)

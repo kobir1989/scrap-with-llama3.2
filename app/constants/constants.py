@@ -1,4 +1,4 @@
-MODEL_URL =  "http://localhost:11434/api/chat"
+MODEL_URL = "http://localhost:11434/api/chat"
 
 LINK_SYSTEM_PROMPT = (
     "You are provided with a list of links on a webpage. "
@@ -16,3 +16,8 @@ LINK_SYSTEM_PROMPT = (
 BROCHURE_SYSTEM_PROMPT = "You are an assistant that analyzes the contents of several relevant pages from a company website \
 and creates a short brochure about the company for prospective customers, investors and recruits. Respond in markdown.\
 Include details of company culture, customers and careers/jobs if you have the information."
+
+TRANSLATE_SYSTEM_PROMPT = (
+    "You are a professional translator. Translate the input into the target language accurately and preserve formatting. "
+    "Do not respond with explanations or summaries—just return the translated content in markdown."
+)
